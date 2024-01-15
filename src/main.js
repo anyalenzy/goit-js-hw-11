@@ -3,6 +3,7 @@ import SimpleLightbox from 'simplelightbox';
 import errorIcon from '/img/error.svg';
 
 const url = 'https://pixabay.com/api/';
+
 const searchParams = {
   key: '41804111-1b8e3eb7a4ad0f0fdba68370e',
   q: '',
@@ -11,6 +12,7 @@ const searchParams = {
   safesearch: true,
   per_page: 18,
 };
+
 const simpleGallery = new SimpleLightbox('.gallery a', {
   overlayOpacity: 0.8,
   captionsData: 'alt',
@@ -22,7 +24,9 @@ const searchInput = document.querySelector('.search-input');
 const gallery = document.querySelector('.gallery');
 const loader = document.querySelector('.loader');
 
-form.addEventListener('submit', event => {
+form.addEventListener('submit', handleSearch);
+
+function handleSearch(event) {
   event.preventDefault();
   if (!searchInput.value.trim()) {
     showErrormsg('Please, fill out the search field');
@@ -30,8 +34,9 @@ form.addEventListener('submit', event => {
   }
   fetchPhotos()
     .then(photos => createGallery(photos))
-    .catch(error => showErrormsg(error.toString()));
-});
+    .catch(error => showErrormsg(error.toString()))
+    .finally(() => form.reset());
+}
 
 function fetchPhotos() {
   gallery.innerHTML = '';
@@ -82,9 +87,7 @@ function createGallery(photos) {
     .join('');
   gallery.insertAdjacentHTML('afterbegin', markup);
   loader.style.display = 'none';
-  searchParams.q = '';
   simpleGallery.refresh();
-  form.reset();
 }
 
 function showErrormsg(msg) {
@@ -95,7 +98,7 @@ function showErrormsg(msg) {
     messageSize: '16px',
     backgroundColor: '#EF4040',
     close: false,
-    // closeOnClick: true,
+    closeOnClick: true,
     closeOnEscape: true,
     message: msg,
   });
